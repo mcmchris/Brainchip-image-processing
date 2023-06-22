@@ -29,9 +29,9 @@ videoCaptureDeviceId = int(0) # use 0 for web camera
 def capture(video_file,queueIn):
     while True:
         cap = cv2.VideoCapture(videoCaptureDeviceId)
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
+        #fps = cap.get(cv2.CAP_PROP_FPS)
+        #num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        #resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
         ret = cap.read()[0]
 
