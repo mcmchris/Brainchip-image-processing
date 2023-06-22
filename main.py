@@ -24,27 +24,11 @@ power_consumption = 0
 runner = None
 countPeople = 0
 inferenceSpeed = 0
-#videoCaptureDeviceId = int(0) # use 0 for web camera
+videoCaptureDeviceId = int(0) # use 0 for web camera
 
-def get_webcams():
-    port_ids = []
-    for port in range(5):
-        print("Looking for a camera in port %s:" %port)
-        camera = cv2.VideoCapture(port)
-        if camera.isOpened():
-            ret = camera.read()[0]
-            if ret:
-                backendName =camera.getBackendName()
-                w = camera.get(3)
-                h = camera.get(4)
-                print("Camera %s (%s x %s) found in port %s " %(backendName,h,w, port))
-                port_ids.append(port)
-            camera.release()
-    return port_ids
 
 def capture(video_file,queueIn):
-    port_ids = get_webcams()
-    videoCaptureDeviceId = int(port_ids[0])
+
     while True:
         cap = cv2.VideoCapture(videoCaptureDeviceId)
         ret = cap.read()[0]
