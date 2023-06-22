@@ -29,9 +29,12 @@ videoCaptureDeviceId = int(0) # use 0 for web camera
 
 def capture(video_file,queueIn):
 
+    cap = cv2.VideoCapture(videoCaptureDeviceId)
+    resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
+
     while True:
-        cap = cv2.VideoCapture(videoCaptureDeviceId)
-        ret = cap.read()[0]
+        
+        ret, frame = cap.read()
 
         if ret:
             #cropped_img = frame[0:720, 280:280+720]
@@ -41,7 +44,9 @@ def capture(video_file,queueIn):
             h = cap.get(4)
             print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
             cap.release()
-            img = cv2.cvtColor(ret, cv2.COLOR_BGR2RGB)
+
+            resized_img = cv2.resize(frame, resize_dim)
+            img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
 
             
             input_data = np.expand_dims(img, axis=0)
