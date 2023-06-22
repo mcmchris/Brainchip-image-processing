@@ -128,7 +128,7 @@ def gen_frames():
                     # print('classification runner response', res)
 
                     if "classification" in res["result"].keys():
-                                                print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
+                        print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
                         for label in labels:
                             score = res['result']['classification'][label]
                             print('%s: %.2f\t' % (label, score), end='')
