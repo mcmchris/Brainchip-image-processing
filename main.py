@@ -35,7 +35,7 @@ def capture(queueIn):
         num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
         resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
-        ret, frame = cap.read()
+        ret, frame = cap.read()[0]
 
         if ret:
             backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
