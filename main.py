@@ -27,7 +27,7 @@ inferenceSpeed = 0
 videoCaptureDeviceId = int(0) # use 0 for web camera
 
 
-def capture(video_file,queueIn):
+def capture(queueIn):
 
     cap = cv2.VideoCapture(videoCaptureDeviceId)
     resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
@@ -38,14 +38,14 @@ def capture(video_file,queueIn):
 
         if ret:
             #cropped_img = frame[0:720, 280:280+720]
-            resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
+            #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
             #backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
             #w = cap.get(3)
             #h = cap.get(4)
             #print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
             #cap.release()
 
-            #resized_img = cv2.resize(frame, resize_dim)
+            resized_img = cv2.resize(frame, resize_dim)
             img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
             input_data = np.expand_dims(img, axis=0)
             if not queueIn.full():
@@ -137,13 +137,13 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    video_file = './video/aerial_1280_1280.avi'
-    #model_file = './model/ei-object-detection-metatf-model.fbz'
-    model_file = './model/akida_model.fbz'
+    #video_file = './video/aerial_1280_1280.avi'
+    model_file = './model/ei-object-detection-metatf-model.fbz'
+    #model_file = './model/akida_model.fbz'
 
     queueIn  = Queue(maxsize = 24)
     queueOut = Queue(maxsize = 24)
-    t1 = threading.Thread(target=capture, args=(video_file,queueIn))
+    t1 = threading.Thread(target=capture, args=(queueIn))
     t1.start()
     t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
     t2.start()
