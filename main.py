@@ -11,133 +11,33 @@ from flask import Flask, render_template, Response
 
 app = Flask(__name__, static_folder='templates/assets')
         
-EI_CLASSIFIER_INPUT_WIDTH  = 224
-EI_CLASSIFIER_INPUT_HEIGHT = 224
-EI_CLASSIFIER_LABEL_COUNT = 1
+EI_CLASSIFIER_INPUT_WIDTH  = 192
+EI_CLASSIFIER_INPUT_HEIGHT = 192
+EI_CLASSIFIER_LABEL_COUNT = 4
 EI_CLASSIFIER_OBJECT_DETECTION_THRESHOLD = 0.95
-categories = ['Vehicle']
+categories = ['ac','tv','light','other']
 inference_speed = 0
 power_consumption = 0
 
-
-def ei_cube_check_overlap(c, x, y, width, height, confidence):
-    is_overlapping = not ((c['x'] + c['width'] < x) or (c['y'] + c['height'] < y) or (c['x'] > x + width) or (c['y'] > y + height))
-
-    if not is_overlapping:
-         return False
-
-    if x < c['x']:
-        c['x'] = x
-        c['width'] += c['x'] - x
-
-    if y < c['y']:
-        c['y'] = y;
-        c['height'] += c['y'] - y;
-
-    if (x + width) > (c['x'] + c['width']):
-        c['width'] += (x + width) - (c['x'] + c['width'])
-
-    if (y + height) > (c['y'] + c['height']):
-        c['height'] += (y + height) - (c['y'] + c['height'])
-
-    if confidence > c['confidence']:
-        c['confidence'] = confidence
-
-    return True
-
-def ei_handle_cube(cubes, x, y, vf, label, detection_threshold):
-    if vf < detection_threshold:
-        return
-
-    has_overlapping = False
-    width = 1
-    height = 1
-
-    for c in cubes:
-        # not cube for same class? continue
-        if c['label'] != label:
-             continue
-
-        if ei_cube_check_overlap(c, x, y, width, height, vf):
-            has_overlapping = True
-            break
-
-    if not has_overlapping:
-        cube = {}
-        cube['x'] = x
-        cube['y'] = y
-        cube['width'] = 1
-        cube['height'] = 1
-        cube['confidence'] = vf
-        cube['label'] = label
-        cubes.append(cube)
-
-def fill_result_struct_from_cubes(cubes, out_width_factor):
-    result = {}
-    bbs = [];
-    results = [];
-    added_boxes_count = 0;
-  
-    for sc in cubes:
-        has_overlapping = False;
-        for c in bbs:
-            # not cube for same class? continue
-            if c['label'] != sc['label']:
-                continue
-
-            if ei_cube_check_overlap(c, sc['x'], sc['y'], sc['width'], sc['height'], sc['confidence']):
-                has_overlapping = True
-                break
-
-        if has_overlapping:
-            continue
-
-        bbs.append(sc)
-
-        results.append({
-            'label'  : sc['label'],
-            'x'      : int(sc['x'] * out_width_factor),
-            'y'      : int(sc['y'] * out_width_factor),
-            'width'  : int(sc['width'] * out_width_factor),
-            'height' : int(sc['height'] * out_width_factor),
-            'value'  : sc['confidence']
-        })
-
-        added_boxes_count += 1
-    result['bounding_boxes'] = results
-    result['bounding_boxes_count'] = len(results)
-    return result
-
-def fill_result_struct_f32_fomo(data, out_width, out_height):
-    cubes = []
-
-    out_width_factor = EI_CLASSIFIER_INPUT_WIDTH / out_width;
-
-    for y in range(out_width):
-        for x in range(out_height):
-            for ix in range(1, EI_CLASSIFIER_LABEL_COUNT + 1):
-                vf = data[y][x][ix];
-                ei_handle_cube(cubes, x, y, vf, categories[ix - 1], EI_CLASSIFIER_OBJECT_DETECTION_THRESHOLD);
-
-    result = fill_result_struct_from_cubes(cubes, out_width_factor)
-
-    return result
-
+videoCaptureDeviceId = int(0) # use 0 for web camera
 
 def capture(video_file, queueIn):
-    cap = cv2.VideoCapture(video_file)
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-    resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
-    if not cap.isOpened():
-        print("File not opened")
-        sys.exit(1)
 
     while True:
+        cap = cv2.VideoCapture(videoCaptureDeviceId)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
+
         ret, frame = cap.read()
 
         if ret:
+            backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
+            w = cap.get(3)
+            h = cap.get(4)
+            print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
+            cap.release()
             #cropped_img = frame[0:720, 280:280+720]
             #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
             resized_img = cv2.resize(frame, resize_dim)
@@ -189,12 +89,6 @@ def inferencing(model_file, queueIn, queueOut):
     
         power_consumption = f'{(active_power/len(power_events)) - floor_power : 0.2f}' 
         #print(akida_model.statistics)
-
-        result = fill_result_struct_f32_fomo(pred, int(EI_CLASSIFIER_INPUT_WIDTH/8), int(EI_CLASSIFIER_INPUT_HEIGHT/8))
-
-        for bb in result['bounding_boxes']:
-            img = cv2.circle(img, (int((bb['x'] + int(bb['width']/2)) * scale_out_x), int((bb['y'] + int(bb['height']/2)) * scale_out_y)), 14, (57, 255, 20), 3)
-            img = cv2.circle(img, (int((bb['x'] + int(bb['width']/2)) * scale_out_x), int((bb['y'] +  int(bb['height']/2)) * scale_out_y)), 8, (255, 165, 0), 3)
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
