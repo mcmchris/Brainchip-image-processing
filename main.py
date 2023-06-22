@@ -138,8 +138,8 @@ def index():
 
 if __name__ == '__main__':
     #video_file = './video/aerial_1280_1280.avi'
-    model_file = './model/ei-object-detection-metatf-model.fbz'
-    #model_file = './model/akida_model.fbz'
+    #model_file = './model/ei-object-detection-metatf-model.fbz'
+    model_file = './model/akida_model.fbz'
 
     queueIn  = Queue(maxsize = 24)
     queueOut = Queue(maxsize = 24)
