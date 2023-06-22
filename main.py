@@ -12,8 +12,8 @@ from flask import Flask, render_template, Response
 
 app = Flask(__name__, static_folder='templates/assets')
         
-EI_CLASSIFIER_INPUT_WIDTH  = 192
-EI_CLASSIFIER_INPUT_HEIGHT = 192
+EI_CLASSIFIER_INPUT_WIDTH  = 224
+EI_CLASSIFIER_INPUT_HEIGHT = 224
 EI_CLASSIFIER_LABEL_COUNT = 4
 EI_CLASSIFIER_OBJECT_DETECTION_THRESHOLD = 0.95
 categories = ['ac','tv','light','other']
