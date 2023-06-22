@@ -34,7 +34,7 @@ def capture(video_file,queueIn):
 
     while True:
         
-        ret, frame = cap.read()[0]
+        ret, frame = cap.read()
 
         if ret:
             #cropped_img = frame[0:720, 280:280+720]
