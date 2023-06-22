@@ -99,16 +99,65 @@ def now():
     return round(time.time() * 1000)
 
 def gen_frames():
+    akida_model = akida.Model(model_file)
+    devices = akida.devices()
+    print(f'Available devices: {[dev.desc for dev in devices]}')
+    device = devices[0]
+    device.soc.power_measurement_enabled = True
+    akida_model.map(device)
+    akida_model.summary()
+    resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
+
     while True:
-        if queueOut.empty():
-            time.sleep(0.01)
-            continue
-        img = queueOut.get()
-        ret, buffer = cv2.imencode('.jpg', img)
-        yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+        try:        
+            camera = cv2.VideoCapture(videoCaptureDeviceId)
+            ret, frame = camera.read()[0]
                     
-    
+            if ret:
+                backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
+                w = camera.get(3)
+                h = camera.get(4)
+                print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
+                camera.release()
+
+                resized_img = cv2.resize(frame, resize_dim)
+                img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
+                input_data = np.expand_dims(img, axis=0)
+            else:
+                raise Exception("Couldn't initialize selected camera.")
+                    
+            next_frame = 0 # limit to ~10 fps here
+                    
+            for res, img in runner.classifier(videoCaptureDeviceId):
+                       
+                if (next_frame > now()):
+                            time.sleep((next_frame - now()) / 1000)
+
+                # inferencia
+                start_time = time.perf_counter()
+                logits = akida_model.predict(input_data)
+                end_time = time.perf_counter()
+                inference_speed = (end_time - start_time) * 1000
+
+                floor_power = device.soc.power_meter.floor
+                power_events = device.soc.power_meter.events()
+                active_power = 0
+                for event in power_events:
+                    active_power += event.power
+            
+                power_consumption = f'{(active_power/len(power_events)) - floor_power : 0.2f}' 
+
+                # inferencia
+
+            ret, buffer = cv2.imencode('.jpg', img)
+            yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            next_frame = now() + 100
+                    
+        finally:
+                if (runner):
+                    runner.stop()
+
 def get_inference_speed():
     while True:
         yield f"data:{inference_speed:.2f}\n\n"
@@ -141,12 +190,5 @@ if __name__ == '__main__':
     #model_file = './model/ei-object-detection-metatf-model.fbz'
     model_file = './model/akida_model.fbz'
 
-    queueIn  = Queue(maxsize = 24)
-    queueOut = Queue(maxsize = 24)
-    t1 = threading.Thread(target=capture, args=(queueIn))
-    t1.start()
-    t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
-    t2.start()
     app.run(host="0.0.0.0", debug=False)
-    t1.join()
-    t2.join()
+
