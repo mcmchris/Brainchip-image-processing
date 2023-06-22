@@ -33,16 +33,16 @@ def capture(video_file,queueIn):
         num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
         resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
-        ret, frame = cap.read()[0]
+        ret = cap.read()[0]
 
         if ret:
             #cropped_img = frame[0:720, 280:280+720]
             #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
-            resized_img = cv2.resize(frame, resize_dim)
-            img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
+            
+            img = cv2.cvtColor(ret, cv2.COLOR_BGR2RGB)
             input_data = np.expand_dims(img, axis=0)
             if not queueIn.full():
-                queueIn.put((frame, input_data))
+                queueIn.put((ret, input_data))
         else:
             return
 
