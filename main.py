@@ -111,7 +111,7 @@ def gen_frames():
     while True:
         try:        
             camera = cv2.VideoCapture(videoCaptureDeviceId)
-            ret, frame = camera.read()[0]
+            ret, frame = camera.read()
                     
             if ret:
                 backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
