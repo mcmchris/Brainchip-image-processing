@@ -38,14 +38,14 @@ def capture(video_file,queueIn):
 
         if ret:
             #cropped_img = frame[0:720, 280:280+720]
-            #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
+            resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
             #backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
             #w = cap.get(3)
             #h = cap.get(4)
             #print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
             #cap.release()
 
-            resized_img = cv2.resize(frame, resize_dim)
+            #resized_img = cv2.resize(frame, resize_dim)
             img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
             input_data = np.expand_dims(img, axis=0)
             if not queueIn.full():
