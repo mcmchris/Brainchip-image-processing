@@ -20,6 +20,10 @@ categories = ['ac','tv','light','other']
 inference_speed = 0
 power_consumption = 0
 
+
+runner = None
+countPeople = 0
+inferenceSpeed = 0
 videoCaptureDeviceId = int(0) # use 0 for web camera
 
 def capture(queueIn):
@@ -98,8 +102,14 @@ def inferencing(model_file, queueIn, queueOut):
         
 
 def gen_frames():
+
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    modelfile = os.path.join(dir_path, 'modelfile.eim')
+    print('MODEL: ' + modelfile)
+    global countPeople
+    global inferenceSpeed
     while True:
-        with ImageImpulseRunner(model_file) as runner:
+        with ImageImpulseRunner(modelfile) as runner:
             try:
                 model_info = runner.init()
                 print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
