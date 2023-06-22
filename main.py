@@ -9,6 +9,7 @@ import numpy as np
 from queue import Queue
 from scipy.special import softmax
 from flask import Flask, render_template, Response
+from edge_impulse_linux.image import ImageImpulseRunner
 
 app = Flask(__name__, static_folder='templates/assets')
         
@@ -24,7 +25,7 @@ power_consumption = 0
 runner = None
 countPeople = 0
 inferenceSpeed = 0
-videoCaptureDeviceId = 0 # use 0 for web camera
+videoCaptureDeviceId = int(0) # use 0 for web camera
 
 
 def capture(queueIn):
@@ -128,7 +129,7 @@ def gen_frames():
                     
             next_frame = 0 # limit to ~10 fps here
                     
-            for res, img in runner.classifier(videoCaptureDeviceId):
+            for img in runner.classifier(videoCaptureDeviceId):
                        
                 if (next_frame > now()):
                             time.sleep((next_frame - now()) / 1000)
