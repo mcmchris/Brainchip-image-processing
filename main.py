@@ -8,6 +8,7 @@ import numpy as np
 from queue import Queue
 from scipy.special import softmax
 from flask import Flask, render_template, Response
+from edge_impulse_linux.image import ImageImpulseRunner
 
 app = Flask(__name__, static_folder='templates/assets')
         
@@ -98,13 +99,63 @@ def inferencing(model_file, queueIn, queueOut):
 
 def gen_frames():
     while True:
-        if queueOut.empty():
-            time.sleep(0.01)
-            continue
-        img = queueOut.get()
-        ret, buffer = cv2.imencode('.jpg', img)
-        yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+        with ImageImpulseRunner(model_file) as runner:
+            try:
+                model_info = runner.init()
+                print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
+                labels = model_info['model_parameters']['labels']
+                
+                camera = cv2.VideoCapture(videoCaptureDeviceId)
+                ret = camera.read()[0]
+                
+                if ret:
+                    backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
+                    w = camera.get(3)
+                    h = camera.get(4)
+                    print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
+                    camera.release()
+                else:
+                    raise Exception("Couldn't initialize selected camera.")
+                
+                next_frame = 0 # limit to ~10 fps here
+                
+                for res, img in runner.classifier(videoCaptureDeviceId):
+                    count = 0
+                    
+                    if (next_frame > now()):
+                        time.sleep((next_frame - now()) / 1000)
+
+                    # print('classification runner response', res)
+
+                    if "classification" in res["result"].keys():
+                                                print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
+                        for label in labels:
+                            score = res['result']['classification'][label]
+                            print('%s: %.2f\t' % (label, score), end='')
+                        print('', flush=True)
+
+                    elif "bounding_boxes" in res["result"].keys():
+                        # print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
+                        countPeople = len(res["result"]["bounding_boxes"])
+                        # inferenceSpeed = res['timing']['classification']
+                        for bb in res["result"]["bounding_boxes"]:
+                            # print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
+                            img = cv2.rectangle(img, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (0, 0, 255), 2)
+                        
+                    ret, buffer = cv2.imencode('.jpg', img)
+                    #buffer = cv2.cvtColor(ret, cv2.COLOR_BGR2GRAY)
+
+                    #/////////////////////////////////////////////////////////////
+
+                    frame = buffer.tobytes()
+                    yield (b'--frame\r\n'
+                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+
+                    next_frame = now() + 100
+                    
+            finally:
+                if (runner):
+                    runner.stop()
     
 def get_inference_speed():
     while True:
@@ -137,14 +188,5 @@ if __name__ == '__main__':
     #video_file = './video/aerial_1280_1280.avi'
     #model_file = './model/ei-object-detection-metatf-model.fbz'
     model_file = './model/akida_model.fbz'
-
-    queueIn  = Queue(maxsize = 24)
-    queueOut = Queue(maxsize = 24)
-
-    t1 = threading.Thread(target=capture, args=(queueIn))
-    t1.start()
-    t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
-    t2.start()
     app.run(host="0.0.0.0", debug=True)
-    t1.join()
-    t2.join()
+
