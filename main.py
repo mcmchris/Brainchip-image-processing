@@ -12,8 +12,8 @@ from flask import Flask, render_template, Response
 
 app = Flask(__name__, static_folder='templates/assets')
         
-EI_CLASSIFIER_INPUT_WIDTH  = 224
-EI_CLASSIFIER_INPUT_HEIGHT = 224
+EI_CLASSIFIER_INPUT_WIDTH  = 192
+EI_CLASSIFIER_INPUT_HEIGHT = 192
 EI_CLASSIFIER_LABEL_COUNT = 4
 EI_CLASSIFIER_OBJECT_DETECTION_THRESHOLD = 0.95
 categories = ['ac','tv','light','other']
@@ -39,11 +39,11 @@ def capture(video_file,queueIn):
         if ret:
             #cropped_img = frame[0:720, 280:280+720]
             #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
-            backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
-            w = cap.get(3)
-            h = cap.get(4)
-            print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
-            cap.release()
+            #backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
+            #w = cap.get(3)
+            #h = cap.get(4)
+            #print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
+            #cap.release()
 
             resized_img = cv2.resize(frame, resize_dim)
             img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
