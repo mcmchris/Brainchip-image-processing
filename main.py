@@ -101,6 +101,8 @@ def inferencing(model_file, queueIn, queueOut):
         if not queueOut.full():
             queueOut.put(img)
         
+def now():
+    return round(time.time() * 1000)
 
 def gen_frames():
 
