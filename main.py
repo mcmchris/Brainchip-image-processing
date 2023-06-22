@@ -42,7 +42,7 @@ def capture(video_file,queueIn):
             img = cv2.cvtColor(ret, cv2.COLOR_BGR2RGB)
             input_data = np.expand_dims(img, axis=0)
             if not queueIn.full():
-                queueIn.put((ret, input_data))
+                queueIn.put((img, input_data))
         else:
             return
 
