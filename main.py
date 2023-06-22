@@ -9,7 +9,6 @@ import numpy as np
 from queue import Queue
 from scipy.special import softmax
 from flask import Flask, render_template, Response
-from edge_impulse_linux.image import ImageImpulseRunner
 
 app = Flask(__name__, static_folder='templates/assets')
         
@@ -129,26 +128,26 @@ def gen_frames():
                     
             next_frame = 0 # limit to ~10 fps here
                     
-            for img in runner.classifier(videoCaptureDeviceId):
-                       
-                if (next_frame > now()):
-                            time.sleep((next_frame - now()) / 1000)
-
-                # inferencia
-                start_time = time.perf_counter()
-                logits = akida_model.predict(input_data)
-                end_time = time.perf_counter()
-                inference_speed = (end_time - start_time) * 1000
-
-                floor_power = device.soc.power_meter.floor
-                power_events = device.soc.power_meter.events()
-                active_power = 0
-                for event in power_events:
-                    active_power += event.power
             
-                power_consumption = f'{(active_power/len(power_events)) - floor_power : 0.2f}' 
+                       
+            if (next_frame > now()):
+                time.sleep((next_frame - now()) / 1000)
 
-                # inferencia
+            # inferencia
+            start_time = time.perf_counter()
+            logits = akida_model.predict(input_data)
+            end_time = time.perf_counter()
+            inference_speed = (end_time - start_time) * 1000
+
+            floor_power = device.soc.power_meter.floor
+            power_events = device.soc.power_meter.events()
+            active_power = 0
+            for event in power_events:
+                active_power += event.power
+            
+            power_consumption = f'{(active_power/len(power_events)) - floor_power : 0.2f}' 
+
+            # inferencia
 
             ret, buffer = cv2.imencode('.jpg', img)
             yield (b'--frame\r\n'
