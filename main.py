@@ -38,11 +38,6 @@ def capture(queueIn):
         ret, frame = cap.read()[0]
 
         if ret:
-            backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
-            w = cap.get(3)
-            h = cap.get(4)
-            print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
-            cap.release()
             #cropped_img = frame[0:720, 280:280+720]
             #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
             resized_img = cv2.resize(frame, resize_dim)
