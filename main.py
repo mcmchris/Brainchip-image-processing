@@ -49,7 +49,7 @@ def capture(video_file,queueIn):
             img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
             input_data = np.expand_dims(img, axis=0)
             if not queueIn.full():
-                queueIn.put((img, input_data))
+                queueIn.put((frame, input_data))
         else:
             return
             #raise Exception("Couldn't initialize selected camera.")
