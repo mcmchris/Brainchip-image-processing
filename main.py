@@ -21,7 +21,7 @@ power_consumption = 0
 
 videoCaptureDeviceId = int(0) # use 0 for web camera
 
-def capture(video_file, queueIn):
+def capture(queueIn):
 
 
     while True:
@@ -134,13 +134,14 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    video_file = './video/aerial_1280_1280.avi'
-    model_file = './model/ei-object-detection-metatf-model.fbz'
+    #video_file = './video/aerial_1280_1280.avi'
+    #model_file = './model/ei-object-detection-metatf-model.fbz'
+    model_file = './model/akida_model.fbz'
 
     queueIn  = Queue(maxsize = 24)
     queueOut = Queue(maxsize = 24)
 
-    t1 = threading.Thread(target=capture, args=(video_file, queueIn))
+    t1 = threading.Thread(target=capture, args=(queueIn))
     t1.start()
     t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
     t2.start()
