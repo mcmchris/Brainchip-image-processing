@@ -29,10 +29,6 @@ videoCaptureDeviceId = int(0) # use 0 for web camera
 def capture(video_file,queueIn):
     while True:
         cap = cv2.VideoCapture(videoCaptureDeviceId)
-        #fps = cap.get(cv2.CAP_PROP_FPS)
-        #num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        #resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
-
         ret = cap.read()[0]
 
         if ret:
@@ -44,11 +40,14 @@ def capture(video_file,queueIn):
             print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
             cap.release()
             img = cv2.cvtColor(ret, cv2.COLOR_BGR2RGB)
+
+            
             input_data = np.expand_dims(img, axis=0)
             if not queueIn.full():
                 queueIn.put((img, input_data))
         else:
-            return
+            #return
+            raise Exception("Couldn't initialize selected camera.")
 
 
 def inferencing(model_file, queueIn, queueOut):
@@ -75,7 +74,7 @@ def inferencing(model_file, queueIn, queueOut):
         end_time = time.perf_counter()
         inference_speed = (end_time - start_time) * 1000
 
-        pred = softmax(logits, axis=-1).squeeze()
+        #pred = softmax(logits, axis=-1).squeeze()
 
         floor_power = device.soc.power_meter.floor
         power_events = device.soc.power_meter.events()
