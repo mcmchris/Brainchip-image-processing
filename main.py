@@ -108,28 +108,29 @@ def gen_frames():
     akida_model.summary()
     resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
+    camera = cv2.VideoCapture(videoCaptureDeviceId)
+    ret, frame = camera.read()
+                    
+    if ret:
+        backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
+        w = camera.get(3)
+        h = camera.get(4)
+        print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
+        camera.release()
+
+        resized_img = cv2.resize(frame, resize_dim)
+        img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
+        input_data = np.expand_dims(img, axis=0)
+    else:
+        raise Exception("Couldn't initialize selected camera.")
+                    
+    next_frame = 0 # limit to ~10 fps here    
+
+
     while True:
         try:        
-            camera = cv2.VideoCapture(videoCaptureDeviceId)
-            ret, frame = camera.read()
-                    
-            if ret:
-                backendName = "dummy" #backendName = camera.getBackendName() this is fixed in opencv-python==4.5.2.52
-                w = camera.get(3)
-                h = camera.get(4)
-                print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
-                camera.release()
 
-                resized_img = cv2.resize(frame, resize_dim)
-                img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
-                input_data = np.expand_dims(img, axis=0)
-            else:
-                raise Exception("Couldn't initialize selected camera.")
-                    
-            next_frame = 0 # limit to ~10 fps here
-                    
-            
-                       
+                                  
             if (next_frame > now()):
                 time.sleep((next_frame - now()) / 1000)
 
