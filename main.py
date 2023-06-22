@@ -34,7 +34,7 @@ def capture(video_file,queueIn):
 
     while True:
         
-        ret, frame = cap.read()
+        ret, frame = cap.read()[0]
 
         if ret:
             #cropped_img = frame[0:720, 280:280+720]
@@ -51,10 +51,10 @@ def capture(video_file,queueIn):
             
             input_data = np.expand_dims(img, axis=0)
             if not queueIn.full():
-                queueIn.put((img, input_data))
+                queueIn.put((frame, input_data))
         else:
-            #return
-            raise Exception("Couldn't initialize selected camera.")
+            return
+            #raise Exception("Couldn't initialize selected camera.")
 
 
 def inferencing(model_file, queueIn, queueOut):
