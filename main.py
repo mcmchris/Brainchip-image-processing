@@ -51,11 +51,11 @@ def capture(queueIn):
 
 def inferencing(model_file, queueIn, queueOut):
     akida_model = akida.Model(model_file)
-    #devices = akida.devices()
-    #print(f'Available devices: {[dev.desc for dev in devices]}')
-    #device = devices[0]
-    #device.soc.power_measurement_enabled = True
-    #akida_model.map(device)
+    devices = akida.devices()
+    print(f'Available devices: {[dev.desc for dev in devices]}')
+    device = devices[0]
+    device.soc.power_measurement_enabled = True
+    akida_model.map(device)
     akida_model.summary()
     i_h, i_w, i_c = akida_model.input_shape
     o_h, o_w, o_c = akida_model.output_shape
@@ -81,13 +81,13 @@ def inferencing(model_file, queueIn, queueOut):
 
         pred = softmax(logits, axis=-1).squeeze()
 
-        #floor_power = device.soc.power_meter.floor
-        #power_events = device.soc.power_meter.events()
-        #active_power = 0
-        #for event in power_events:
-        #    active_power += event.power
+        floor_power = device.soc.power_meter.floor
+        power_events = device.soc.power_meter.events()
+        active_power = 0
+        for event in power_events:
+            active_power += event.power
     
-        #power_consumption = f'{(active_power/len(power_events)) - floor_power : 0.2f}' 
+        power_consumption = f'{(active_power/len(power_events)) - floor_power : 0.2f}' 
         #print(akida_model.statistics)
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
