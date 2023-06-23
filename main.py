@@ -128,7 +128,9 @@ def gen_frames():
 
 
     while True:
-        
+        try:        
+
+                                  
             if (next_frame > now()):
                 time.sleep((next_frame - now()) / 1000)
 
@@ -152,10 +154,10 @@ def gen_frames():
             yield (b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
             next_frame = now() + 100
-                                  
-
                     
-
+        finally:
+                if (runner):
+                    runner.stop()
 
 def get_inference_speed():
     while True:
@@ -186,8 +188,8 @@ def index():
 
 if __name__ == '__main__':
     #video_file = './video/aerial_1280_1280.avi'
-    model_file = './model/ei-object-detection-metatf-model.fbz'
-    #model_file = './model/akida_model.fbz'
+    #model_file = './model/ei-object-detection-metatf-model.fbz'
+    model_file = './model/akida_model.fbz'
 
     app.run(host="0.0.0.0", debug=False)
 
