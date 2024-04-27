@@ -118,8 +118,8 @@ def gen_frames():
         print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
         camera.release()
 
-        #resized_img = cv2.resize(frame, resize_dim)
-        img = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        resized_img = cv2.resize(frame, resize_dim)
+        img = cv2.cvtColor(resized_img, cv2.COLOR_RGB2BGR)
         input_data = np.expand_dims(img, axis=0)
     else:
         raise Exception("Couldn't initialize selected camera.")
