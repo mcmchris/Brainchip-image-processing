@@ -118,18 +118,16 @@ def gen_frames():
         print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
         camera.release()
 
-        resized_img = cv2.resize(frame, resize_dim)
-        img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
+        #resized_img = cv2.resize(frame, resize_dim)
+        img = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         input_data = np.expand_dims(img, axis=0)
     else:
         raise Exception("Couldn't initialize selected camera.")
                     
     next_frame = 0 # limit to ~10 fps here    
 
-
     while True:
         try:        
-
                                   
             if (next_frame > now()):
                 time.sleep((next_frame - now()) / 1000)
@@ -191,5 +189,5 @@ if __name__ == '__main__':
     model_file = './model/ei-object-detection-metatf-model.fbz'
     #model_file = './model/akida_model.fbz'
 
-    app.run(host="0.0.0.0", debug=False)
+    app.run(host="0.0.0.0", port=4912, debug=True) 
 
