@@ -188,6 +188,11 @@ if __name__ == '__main__':
     #video_file = './video/aerial_1280_1280.avi'
     model_file = './model/ei-object-detection-metatf-model.fbz'
     #model_file = './model/akida_model.fbz'
+    t1 = threading.Thread(target=capture)
+    t1.start()
+    t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
+    t2.start()
 
     app.run(host="0.0.0.0", port=4912, debug=True) 
-
+    t1.join()
+    t2.join()
