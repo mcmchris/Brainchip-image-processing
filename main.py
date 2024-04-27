@@ -24,7 +24,7 @@ power_consumption = 0
 runner = None
 countPeople = 0
 inferenceSpeed = 0
-videoCaptureDeviceId = int(0) # use 0 for web camera
+videoCaptureDeviceId = int(2) # use 0 for web camera
 
 
 def capture(queueIn):
