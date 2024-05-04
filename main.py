@@ -145,7 +145,7 @@ def capture(queueIn):
     resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
     while True:
-        buffer = picam2.capture_array("lores")
+        buffer = picam2.capture_buffer("lores")
         #buffer = picam2.capture_buffer("lores")
         #grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
         rgb = cv2.cvtColor(buffer, cv2.COLOR_YUV420p2RGB)
