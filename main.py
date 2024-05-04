@@ -128,7 +128,7 @@ def fill_result_struct_f32_fomo(data, out_width, out_height):
     return result
 
 
-def capture(queueIn):
+def capture(queueIn,):
     picam2 = Picamera2()
     picam2.start_preview(Preview.DRM, x=0, y=0, width=1920, height=1080)
     config = picam2.create_preview_configuration(main={"size": normalSize},
