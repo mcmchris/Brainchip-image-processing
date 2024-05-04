@@ -145,16 +145,21 @@ def capture(queueIn):
     resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
     while True:
-        buffer = picam2.capture_array("lores")
-        rgb = cv2.cvtColor(buffer, cv2.COLOR_YUV420p2RGB)
+        buffer = picam2.capture_buffer("lores")
+        #rgb = cv2.cvtColor(buffer, cv2.COLOR_YUV420p2RGB)
         #cropped_img = frame[0:720, 280:280+720]
         #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
-        
-        resized_img = cv2.resize(rgb, resize_dim)
+        grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
+        (ret, buffer) = cv2.imencode('.jpg', grey) #change rgb to grey for grayscale streaming
+        if not ret:
+            continue
+        frame = buffer.tobytes()
+        #resized_img = cv2.resize(rgb, resize_dim)
+
         #img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
-        input_data = np.expand_dims(resized_img, axis=0)
+        input_data = np.expand_dims(frame, axis=0)
         if not queueIn.full():
-            queueIn.put((rgb, input_data))
+            queueIn.put((frame, input_data))
 
 
 
