@@ -150,7 +150,6 @@ def capture(queueIn):
 
         grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
 
-
         resized_img = cv2.resize(grey, resize_dim)
 
         #img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
