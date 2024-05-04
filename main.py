@@ -145,18 +145,19 @@ def capture(queueIn,):
     resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
     while True:
-        buffer = picam2.capture_buffer("lores")
+        ret, buffer = picam2.capture_buffer("lores")
         #rgb = cv2.cvtColor(buffer, cv2.COLOR_YUV420p2RGB)
+        if ret:
+            grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
 
-        grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
+            #resized_img = cv2.resize(grey, resize_dim)
 
-        resized_img = cv2.resize(grey, resize_dim)
-
-        #img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
-        input_data = np.expand_dims(resized_img, axis=0)
-        if not queueIn.full():
-            queueIn.put((buffer, input_data))
-
+            #img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
+            input_data = np.expand_dims(grey, axis=0)
+            if not queueIn.full():
+                queueIn.put((buffer, input_data))
+        else:
+            return
 
 
 def inferencing(model_file, queueIn, queueOut):
