@@ -128,11 +128,11 @@ def fill_result_struct_f32_fomo(data, out_width, out_height):
     return result
 
 
-def capture(video_file, queueIn):
+def capture(queueIn):
     picam2 = Picamera2()
     picam2.start_preview(Preview.DRM, x=0, y=0, width=1920, height=1080)
     config = picam2.create_preview_configuration(main={"size": normalSize},
-                                                 lores={"size": lowresSize, "format": "YUV420"})
+                                                 lores={"size": normalSize, "format": "YUV420"})
     picam2.configure(config)
 
     stride = picam2.stream_configuration("lores")["stride"]
@@ -205,7 +205,7 @@ def inferencing(model_file, queueIn, queueOut):
             img = cv2.circle(img, (int((bb['x'] + int(bb['width']/2)) * scale_out_x), int((bb['y'] + int(bb['height']/2)) * scale_out_y)), 14, (57, 255, 20), 3)
             img = cv2.circle(img, (int((bb['x'] + int(bb['width']/2)) * scale_out_x), int((bb['y'] +  int(bb['height']/2)) * scale_out_y)), 8, (255, 165, 0), 3)
 
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV420p)
+        img = cv2.cvtColor(img, cv2.COLOR_YUV420p2RGB)
 
         if not queueOut.full():
             queueOut.put(img)
@@ -249,16 +249,15 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    video_file = './video/aerial_1280_1280.avi'
     model_file = './model/lamp-plant-model.fbz'
 
     queueIn  = Queue(maxsize = 24)
     queueOut = Queue(maxsize = 24)
 
-    t1 = threading.Thread(target=capture, args=(video_file, queueIn))
+    t1 = threading.Thread(target=capture, args=(queueIn))
     t1.start()
     t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
     t2.start()
-    app.run(host = '0.0.0.0', port = 4912)
+    app.run(host="0.0.0.0", port=4912, debug=True) 
     t1.join()
     t2.join()
