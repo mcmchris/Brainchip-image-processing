@@ -132,7 +132,7 @@ def capture(queueIn):
     picam2 = Picamera2()
     picam2.start_preview(Preview.DRM, x=0, y=0, width=1920, height=1080)
     config = picam2.create_preview_configuration(main={"size": normalSize},
-                                                 lores={"size": normalSize, "format": "YUV420"})
+                                                 lores={"size": lowresSize, "format": "YUV420"})
     picam2.configure(config)
 
     stride = picam2.stream_configuration("lores")["stride"]
