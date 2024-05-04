@@ -154,10 +154,10 @@ def capture(queueIn):
         if not ret:
             continue
         frame = buffer.tobytes()
-        #resized_img = cv2.resize(rgb, resize_dim)
+        resized_img = cv2.resize(rgb, resize_dim)
 
-        #img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
-        input_data = np.expand_dims(rgb, axis=0)
+        img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
+        input_data = np.expand_dims(img, axis=0)
         if not queueIn.full():
             queueIn.put((frame, input_data))
 
