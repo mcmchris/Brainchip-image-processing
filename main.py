@@ -15,8 +15,8 @@ lowresSize = (160, 160)
 
 app = Flask(__name__, static_folder='templates/assets')
         
-EI_CLASSIFIER_INPUT_WIDTH  = 224
-EI_CLASSIFIER_INPUT_HEIGHT = 224
+EI_CLASSIFIER_INPUT_WIDTH  = 160
+EI_CLASSIFIER_INPUT_HEIGHT = 160
 EI_CLASSIFIER_LABEL_COUNT = 3
 EI_CLASSIFIER_OBJECT_DETECTION_THRESHOLD = 0.95
 categories = ['Lamp','Plant','Unknown']
