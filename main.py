@@ -259,7 +259,7 @@ if __name__ == '__main__':
     queueIn  = Queue(maxsize = 24)
     queueOut = Queue(maxsize = 24)
 
-    t1 = threading.Thread(target=capture, args=(queueIn))
+    t1 = threading.Thread(target=capture, args=(queueIn,))
     t1.start()
     t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
     t2.start()
