@@ -258,6 +258,6 @@ if __name__ == '__main__':
     t1.start()
     t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
     t2.start()
-    app.run(host="0.0.0.0", port=4912) 
+    app.run(host="0.0.0.0", port=4912, debug=True) 
     t1.join()
     t2.join()
