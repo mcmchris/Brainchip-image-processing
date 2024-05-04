@@ -154,7 +154,7 @@ def capture(queueIn,):
         #img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
         input_data = np.expand_dims(resized_img, axis=0)
         if not queueIn.full():
-            queueIn.put((buffer, input_data))
+            queueIn.put((rgb, input_data))
 
 
 
