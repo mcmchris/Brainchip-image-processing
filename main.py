@@ -132,7 +132,7 @@ def capture(queueIn):
     picam2 = Picamera2()
     picam2.start_preview(Preview.DRM, x=0, y=0, width=1920, height=1080)
     config = picam2.create_preview_configuration(main={"size": normalSize},
-                                                 lores={"size": normalSize, "format": "YUV420"})
+                                                 lores={"size": lowresSize, "format": "YUV420"})
     picam2.configure(config)
 
     stride = picam2.stream_configuration("lores")["stride"]
@@ -145,15 +145,15 @@ def capture(queueIn):
     resize_dim = (EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
 
     while True:
-        #buffer = picam2.capture_array("lores")
-        buffer = picam2.capture_buffer("lores")
+        buffer = picam2.capture_array("lores")
+        #buffer = picam2.capture_buffer("lores")
         #grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
         #rgb = cv2.cvtColor(buffer, cv2.COLOR_YUV420p2RGB)
         #cropped_img = frame[0:720, 280:280+720]
         #resized_img = cv2.resize(frame, resize_dim, interpolation = cv2.INTER_AREA)
         
-        #resized_img = cv2.resize(grey, resize_dim)
-        img = cv2.cvtColor(buffer, cv2.COLOR_YUV420p2RGB)
+        resized_img = cv2.resize(buffer, resize_dim)
+        img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
         input_data = np.expand_dims(img, axis=0)
         if not queueIn.full():
             queueIn.put((buffer, input_data))
