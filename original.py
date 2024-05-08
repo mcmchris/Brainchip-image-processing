@@ -245,8 +245,8 @@ if __name__ == '__main__':
     #video_file = './video/test_model.avi'
     model_file = './model/lamp-plant-model.fbz'
 
-    queueIn  = Queue(maxsize = 40)
-    queueOut = Queue(maxsize = 40)
+    queueIn  = Queue(maxsize = 24)
+    queueOut = Queue(maxsize = 24)
 
     t1 = threading.Thread(target=capture, args=(video_file, queueIn))
     t1.start()
