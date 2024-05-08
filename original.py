@@ -162,8 +162,8 @@ def inferencing(model_file, queueIn, queueOut):
     o_h, o_w, o_c = akida_model.output_shape
     scale_x = int(i_w/o_w)
     scale_y = int(i_h/o_h)
-    scale_out_x = 512/EI_CLASSIFIER_INPUT_WIDTH
-    scale_out_y = 512/EI_CLASSIFIER_INPUT_HEIGHT
+    scale_out_x = 1920/EI_CLASSIFIER_INPUT_WIDTH
+    scale_out_y = 1080/EI_CLASSIFIER_INPUT_HEIGHT
 
     global inference_speed
     global power_consumption
@@ -241,7 +241,7 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    video_file = './video/model_test.mp4'
+    video_file = './video/video.mp4'
     #video_file = './video/test_model.avi'
     model_file = './model/lamp-plant-model.fbz'
 
