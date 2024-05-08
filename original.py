@@ -4,6 +4,7 @@ import math
 import time
 import signal
 import threading
+import sys, getopt
 import numpy as np
 from queue import Queue
 from scipy.special import softmax
