@@ -4,6 +4,7 @@ import math
 import time
 import signal
 import threading
+import sys, getopt
 import numpy as np
 from queue import Queue
 from scipy.special import softmax
@@ -17,9 +18,9 @@ app = Flask(__name__, static_folder='templates/assets')
         
 EI_CLASSIFIER_INPUT_WIDTH  = 160
 EI_CLASSIFIER_INPUT_HEIGHT = 160
-EI_CLASSIFIER_LABEL_COUNT = 3
+EI_CLASSIFIER_LABEL_COUNT = 1
 EI_CLASSIFIER_OBJECT_DETECTION_THRESHOLD = 0.95
-categories = ['Lamp','Plant','Unknown']
+categories = ['Vehicle']
 inference_speed = 0
 power_consumption = 0
 
