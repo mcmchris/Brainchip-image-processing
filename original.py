@@ -243,8 +243,9 @@ def index():
 if __name__ == '__main__':
     video_file = './video/video.mp4'
     #video_file = './video/test_model.avi'
-    model_file = './model/lamp-plant-model.fbz'
-
+    #model_file = './model/lamp-plant-model.fbz'
+    model_file = './model/ei-object-detection-metatf-model.fbz'
+    
     queueIn  = Queue(maxsize = 24)
     queueOut = Queue(maxsize = 24)
 
