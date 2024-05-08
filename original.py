@@ -244,13 +244,13 @@ if __name__ == '__main__':
     video_file = './video/model_test2.avi'
     model_file = './model/lamp-plant-model.fbz'
 
-    queueIn  = Queue(maxsize = 24)
-    queueOut = Queue(maxsize = 24)
+    queueIn  = Queue(maxsize = 40)
+    queueOut = Queue(maxsize = 40)
 
     t1 = threading.Thread(target=capture, args=(video_file, queueIn))
     t1.start()
     t2 = threading.Thread(target=inferencing, args=(model_file, queueIn, queueOut))
     t2.start()
-    app.run(host = '0.0.0.0', port = 8080)
+    app.run(host = '0.0.0.0', port = 4912, debug=True)
     t1.join()
     t2.join()
