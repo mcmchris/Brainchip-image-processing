@@ -14,9 +14,9 @@ app = Flask(__name__, static_folder='templates/assets')
         
 EI_CLASSIFIER_INPUT_WIDTH  = 160
 EI_CLASSIFIER_INPUT_HEIGHT = 160
-EI_CLASSIFIER_LABEL_COUNT = 3
+EI_CLASSIFIER_LABEL_COUNT = 1
 EI_CLASSIFIER_OBJECT_DETECTION_THRESHOLD = 0.95
-categories = ['Lamp', 'Plant', 'Unknown']
+categories = ['Vehicle']
 inference_speed = 0
 power_consumption = 0
 
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     #video_file = './video/test_model.avi'
     #model_file = './model/lamp-plant-model.fbz'
     model_file = './model/ei-object-detection-metatf-model.fbz'
-    
+
     queueIn  = Queue(maxsize = 24)
     queueOut = Queue(maxsize = 24)
 
