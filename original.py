@@ -240,7 +240,7 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    video_file = './video/model_test.mp4'
+    video_file = './video/model_test2.avi'
     model_file = './model/lamp-plant-model.fbz'
 
     queueIn  = Queue(maxsize = 24)
